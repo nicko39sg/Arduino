@@ -15,3 +15,10 @@
 *.PDF	 diff=astextplain
 *.rtf	 diff=astextplain
 *.RTF	 diff=astextplain
+*.txt	 diff=astextplain
+*.cpp	 diff=astextplain
+*.h	 diff=astextplain
+*.pde	 diff=astextplain
+*.RTF	 diff=astextplain
+*.ino	 diff=astextplain
+
