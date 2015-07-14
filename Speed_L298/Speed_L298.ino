@@ -18,7 +18,16 @@
 /
 /
 **************************************************************************/
+//Librerias
 
+  //Movimiento de IP-CAM
+    #include <Stepper.h> 
+      const int stepsPerRevolution = 200;                // Pasos por Revolucion
+    Stepper myStepper1(stepsPerRevolution, 8,9,10,11);   // Inicializamos las librerias de 8 a 11 
+    Stepper myStepper2(stepsPerRevolution, 8,9,10,11);   // y del 8 al 11
+    int n=0;
+    int k=0;
+    
 //Variables 
 int Dato;  //Recoge dato por puerto serie
 
@@ -44,8 +53,6 @@ int GlobalSpeedB2 = 125;
 int GlobalSpeedA2 = 125;
 int GlobalSpeedB1 = 125;
 int GlobalSpeedA1 = 125;
-
-
 
 //Motor Derecha-Arriba               (1)
 int dir_IN3_2    = 30;   //Morado
@@ -112,8 +119,26 @@ Serial.println("");
   pinMode(dir_IN2_1,    OUTPUT);
   pinMode(speed_EN_A_1, OUTPUT);
 
-}
+//Definimos la velocidad de IP-CAM
 
+  myStepper1.setSpeed(30);   //fijamos la velocidad a 60 rpm:
+  myStepper2.setSpeed(30);
+  
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void getMotorData(){                                      // Calculando velocidad
+
+    static long countAnt = 0;                             // Ultima cuenta
+
+      /*
+      //Calculando velocidad segun Encoder
+
+        speed_act = ((count - countAnt)*(60*(1000/LOOPTIME)))/(30);           
+
+        countAnt = count;    */                                       
+
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -124,8 +149,15 @@ void loop() {
      Dato = Serial.read();
      Serial.flush();
      
+     if (PID = 1){
+     getMotorData();
+       
+     }
+     
 switch (Dato) {
   
+///////////////////////////////////////////////////////////////////////////////////////// 
+
       case 'w'://Hacia Delante
       
         Serial.println("Hacia Delante");
@@ -147,7 +179,6 @@ switch (Dato) {
         //Motor Izquierda-Abajo              (4) 
         digitalWrite(dir_IN1_1, HIGH);
         digitalWrite(dir_IN2_1, LOW);
-        
       break;
         
       case 's'://Hacia Atras
@@ -171,7 +202,6 @@ switch (Dato) {
         //Motor Izquierda-Abajo              (4)
         digitalWrite(dir_IN1_1, LOW);
         digitalWrite(dir_IN2_1, HIGH);
-       
       break;
         
       case 'a'://Izquierda
@@ -195,7 +225,6 @@ switch (Dato) {
         //Motor Izquierda-Abajo              (4)
         digitalWrite(dir_IN1_1, LOW);
         digitalWrite(dir_IN2_1, HIGH);
-       
       break;
         
       case 'd'://Derecha
@@ -219,7 +248,6 @@ switch (Dato) {
         //Motor Izquierda-Abajo              (4)
         digitalWrite(dir_IN1_1, LOW);
         digitalWrite(dir_IN2_1, HIGH);
-        
       break;
         
       case 'e'://Rotar Derecha
@@ -266,13 +294,40 @@ switch (Dato) {
         //Motor Izquierda-Abajo              (4)
         digitalWrite(dir_IN1_1, LOW);
         digitalWrite(dir_IN2_1, HIGH);
-        
+      break;
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+      case 'y'://Rotar Izquierda - IP-CAM
+        Serial.println("Mover Izquierda IP-CAM");
+        while(n<20){ myStepper1.step(stepsPerRevolution); n++;}
+        delay(500); n=0;
+      break;
+      
+      case 'i'://Rotar Derecha - IP-CAM
+        Serial.println("Mover Derecha IP-CAM");
+        while(n<20){ myStepper1.step(-stepsPerRevolution); n++;}
+        delay(500); n=0;
       break;
         
+      case 'u'://Rotar Izquierda - IP-CAM
+        Serial.println("Mover Arriba IP-CAM");
+        while(k<20){ myStepper2.step(stepsPerRevolution); k++;}
+        delay(500); k=0;
+      break;
+      
+      case 'j'://Rotar Derecha - IP-CAM
+        Serial.println("Mover Abajo IP-CAM");
+        while(k<20){ myStepper2.step(-stepsPerRevolution); k++;}
+        delay(500); k=0;
+      break;
+      
+/////////////////////////////////////////////////////////////////////////////////////////    
+
       case '1'://Speed UP
       
-          if (PID =0){
-            Serial.println("Speed UP");
+           if (PID =0){
+              Serial.println("Speed UP");
       
             if (GlobalSpeed < GlobalSpeed){
         
@@ -288,26 +343,25 @@ switch (Dato) {
                Serial.print("SPA2:"); Serial.println(GlobalSpeedA2);
                Serial.print("SPB1:"); Serial.println(GlobalSpeedB1);
                Serial.print("SPA1:"); Serial.println(GlobalSpeedA1);
-         
       break;                             }
     
             else{
-            Serial.println("Speep MAX");  
+            Serial.println("Speep UP");  
       break;    }
                     }
       
         else{
       Serial.println("Error PID is ON");  
       break;} 
-        
+       
       case '2'://Speed Down
 
           if (PID =0){
-            Serial.println("Speed Down");
+              Serial.println("Speed Down");
       
             if (GlobalSpeed < GlobalSpeed){
         
-              GlobalSpeed = GlobalSpeed + 25;
+              GlobalSpeed = GlobalSpeed - 25;
         
               GlobalSpeedB2 = GlobalSpeed;
               GlobalSpeedA2 = GlobalSpeed;
@@ -319,7 +373,6 @@ switch (Dato) {
                Serial.print("SPA2:"); Serial.println(GlobalSpeedA2);
                Serial.print("SPB1:"); Serial.println(GlobalSpeedB1);
                Serial.print("SPA1:"); Serial.println(GlobalSpeedA1);
-         
       break;                             }
     
             else{
@@ -331,7 +384,8 @@ switch (Dato) {
       Serial.println("Error PID is ON");  
       break;} 
       
-      
+///////////////////////////////////////////////////////////////////////////////////////// 
+
       case '3'://Activacion de PID
       
         if (PID = 0){
@@ -344,7 +398,8 @@ switch (Dato) {
           PID = 0;
       break;}
         
-      
+/////////////////////////////////////////////////////////////////////////////////////////   
+
       default:{
        Serial.println("ERROR Comando No registrado");     
               }
